@@ -12,7 +12,7 @@ export default function Login() {
       <button
         onClick={async () => {
           const provider = new GoogleAuthProvider();
-          const userInfo = await signInWithPopup(auth, provider);
+          await signInWithPopup(auth, provider);
 
           router.push("/dashboard");
         }}
