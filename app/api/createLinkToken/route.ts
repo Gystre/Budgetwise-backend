@@ -1,23 +1,6 @@
-import {
-  Configuration,
-  CountryCode,
-  PlaidApi,
-  PlaidEnvironments,
-  Products,
-} from "plaid";
+import { CountryCode, Products } from "plaid";
 import { getUser } from "../getUser";
-
-const configuration = new Configuration({
-  basePath: PlaidEnvironments.sandbox,
-  baseOptions: {
-    headers: {
-      "PLAID-CLIENT-ID": process.env.PLAID_CLIENT_ID,
-      "PLAID-SECRET": process.env.PLAID_SECRET_SANDBOX,
-    },
-  },
-});
-
-const plaid = new PlaidApi(configuration);
+import { plaid } from "../plaid";
 
 /*
 POST /api/createLinkToken

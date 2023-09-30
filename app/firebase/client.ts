@@ -13,7 +13,9 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-export enum Collections {}
+export enum Collections {
+  plaidAccessTokens = "plaidAccessTokens",
+}
 
 // init firebase services
 export const app =
