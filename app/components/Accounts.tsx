@@ -1,3 +1,37 @@
-// F: render this component to view the plaid accounts
-// also make a component for the transactions and the challenge will be done
-// move the api logic in /dashboard into this component
+import { AccountBase } from "plaid";
+import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import { auth } from "../firebase/client";
+
+interface AccountsProps {}
+
+// fetch /api/accounts and display all the accounts associated with the access token
+export const Accounts: React.FC<AccountsProps> = ({}) => {
+  const [accounts, setAccounts] = useState<Array<AccountBase>>([]);
+
+  useEffect(() => {
+    (async () => {
+      const accountsResponse = await fetch("/api/accounts", {
+        headers: {
+          "Id-Token": (await auth.currentUser?.getIdToken()) as string,
+        },
+      });
+
+      if (!accountsResponse.ok) {
+        toast.error("Something went wrong with fetching your accounts :(");
+        return;
+      }
+
+      const data = await accountsResponse.json();
+      setAccounts(data);
+    })();
+  }, []);
+
+  return (
+    <div>
+      {accounts.map((account) => (
+        <div>{account.official_name}</div>
+      ))}
+    </div>
+  );
+};

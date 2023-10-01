@@ -1,11 +1,12 @@
 "use client";
 
-import { AccountBase } from "plaid";
 import { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { CgSpinnerAlt } from "react-icons/cg";
 import { PlaidLink } from "react-plaid-link";
 import { toast } from "react-toastify";
+import { Accounts } from "../components/Accounts";
+import { Transactions } from "../components/Transactions";
 import { auth } from "../firebase/client";
 
 export default function Dashboard() {
@@ -13,7 +14,6 @@ export default function Dashboard() {
   const [loading] = useAuthState(auth);
   const [loadingResponse, setLoadingResponse] = useState(true);
   const [hasAccessToken, setHasAccessToken] = useState(false);
-  const [accounts, setAccounts] = useState<Array<AccountBase>>([]);
 
   useEffect(() => {
     (async () => {
@@ -34,23 +34,8 @@ export default function Dashboard() {
 
       // user has an access token already, don't let them connect another bank account
       if (accessTokenResponse.status === 200) {
-        // fetch the user's accounts
-        const accountsResponse = await fetch("/api/accounts", {
-          headers: {
-            "Id-Token": (await auth.currentUser?.getIdToken()) as string,
-          },
-        });
         setLoadingResponse(false);
         setHasAccessToken(true);
-
-        if (!accountsResponse.ok) {
-          toast.error("Something went wrong with fetching your accounts :(");
-          return;
-        }
-
-        const data = await accountsResponse.json();
-        setAccounts(data.accounts);
-
         return;
       }
 
@@ -108,16 +93,20 @@ export default function Dashboard() {
       </PlaidLink>
     );
   } else if (!loadingResponse && hasAccessToken) {
-    linkButton = <p>You already have a bank account connected!</p>;
+    // user already has a bank account connected
+    linkButton = null;
   } else if (loadingResponse) {
     linkButton = <CgSpinnerAlt className="animate-spin" size={32} />;
   }
 
   return (
     <div className="flex flex-col mx-4 md:mx-16 mt-10">
-      <h1 className="text-h4 font-bold">Dashboard</h1>
       <div>{linkButton}</div>
-      <div>Your accounts:</div>
+      <h1 className="text-h4 font-bold">Accounts:</h1>
+      {hasAccessToken && <Accounts />}
+      <div className="mb-8"></div>
+      <h1 className="text-h4 font-bold">Transactions:</h1>
+      {hasAccessToken && <Transactions />}
     </div>
   );
 }
