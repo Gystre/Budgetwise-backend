@@ -102,9 +102,12 @@ export default function Dashboard() {
   return (
     <div className="flex flex-col mx-4 md:mx-16 mt-10">
       <div>{linkButton}</div>
+
       <h1 className="text-h4 font-bold">Accounts:</h1>
       {hasAccessToken && <Accounts />}
+
       <div className="mb-8"></div>
+
       <h1 className="text-h4 font-bold">Transactions:</h1>
       {hasAccessToken && <Transactions />}
     </div>

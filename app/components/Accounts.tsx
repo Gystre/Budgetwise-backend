@@ -23,6 +23,7 @@ export const Accounts: React.FC<AccountsProps> = ({}) => {
       }
 
       const data = await accountsResponse.json();
+
       setAccounts(data);
     })();
   }, []);
@@ -30,7 +31,10 @@ export const Accounts: React.FC<AccountsProps> = ({}) => {
   return (
     <div>
       {accounts.map((account) => (
-        <div>{account.official_name}</div>
+        <div key={account.account_id}>
+          ${account.balances.current} {account.balances.iso_currency_code} -{" "}
+          {account.official_name}
+        </div>
       ))}
     </div>
   );
