@@ -14,6 +14,7 @@ export default function Dashboard() {
   const [loading] = useAuthState(auth);
   const [loadingResponse, setLoadingResponse] = useState(true);
   const [hasAccessToken, setHasAccessToken] = useState(false);
+  const [gotPublicToken, setGotPublicToken] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -57,7 +58,7 @@ export default function Dashboard() {
       const data = await response.json();
       setLinkToken(data.linkToken);
     })();
-  }, [loading]);
+  }, [loading, gotPublicToken]);
 
   let linkButton;
   if (!loadingResponse && !hasAccessToken) {
@@ -65,8 +66,6 @@ export default function Dashboard() {
       <PlaidLink
         token={linkToken}
         onSuccess={async (publicToken, metadata) => {
-          console.log(publicToken, metadata);
-
           // send the public token to the server to get an access token
           const response = await fetch("/api/createAccessToken", {
             method: "POST",
@@ -87,6 +86,7 @@ export default function Dashboard() {
           }
 
           toast.success("Successfully connected bank account!");
+          setGotPublicToken(true);
         }}
       >
         Connect a bank account
@@ -103,13 +103,21 @@ export default function Dashboard() {
     <div className="flex flex-col mx-4 md:mx-16 mt-10">
       <div>{linkButton}</div>
 
-      <h1 className="text-h4 font-bold">Accounts:</h1>
-      {hasAccessToken && <Accounts />}
+      {hasAccessToken && (
+        <>
+          <h1 className="text-h4 font-bold">Accounts:</h1>
+          <Accounts />
+        </>
+      )}
 
       <div className="mb-8"></div>
 
-      <h1 className="text-h4 font-bold">Transactions:</h1>
-      {hasAccessToken && <Transactions />}
+      {hasAccessToken && (
+        <>
+          <h1 className="text-h4 font-bold">Transactions:</h1>
+          <Transactions />
+        </>
+      )}
     </div>
   );
 }

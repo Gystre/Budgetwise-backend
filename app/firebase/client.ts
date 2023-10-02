@@ -15,6 +15,7 @@ const firebaseConfig = {
 
 export enum Collections {
   plaidAccessTokens = "plaidAccessTokens",
+  accounts = "accounts",
 }
 
 // init firebase services

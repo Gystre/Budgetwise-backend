@@ -1,5 +1,5 @@
 import { Collections, db } from "@/app/firebase/client";
-import { doc, setDoc } from "firebase/firestore";
+import { addDoc, collection, doc, setDoc } from "firebase/firestore";
 import { getUser } from "../getUser";
 import { plaid } from "../plaid";
 
@@ -30,6 +30,26 @@ export async function POST(request: Request) {
   });
 
   console.log("POST /api/createAccessToken: Stored access token in firestore");
+
+  // store account info in firebase under accounts collection
+  const accountsResponse = await plaid.accountsGet({
+    access_token: accessToken,
+  });
+
+  if (accountsResponse.status !== 200) {
+    throw new Error("Invalid access token");
+  }
+
+  const accounts = accountsResponse.data.accounts;
+  accounts.forEach(async (account) => {
+    await addDoc(collection(db, Collections.accounts), {
+      balance: account.balances.current,
+      name: account.name,
+      officialName: account.official_name,
+      isoCurrencyCode: account.balances.iso_currency_code,
+      uid: user.uid,
+    });
+  });
 
   return new Response();
 }
